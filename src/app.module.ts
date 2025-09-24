@@ -31,8 +31,6 @@ import { ProductsModule } from './products/products.module';
         database: configService.get('DB_NAME'),
         autoLoadEntities: true,
         synchronize: false,
-        migrations: ['src/migrations/*.ts'],
-        migrationsRun: true,
       }),
     }),
 

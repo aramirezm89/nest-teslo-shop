@@ -7,7 +7,7 @@ import { Product } from './entities/product.entity';
 @Module({
   controllers: [ProductsController],
   providers: [ProductsService],
-  // Indica que se va a usar la entidad Product esencial para la creacion de tablas
+  // Registra la entidad Product para que se pueda inyectar su repositorio en el módulo
   imports: [TypeOrmModule.forFeature([Product])],
 })
 export class ProductsModule {}
