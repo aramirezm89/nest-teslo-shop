@@ -73,6 +73,8 @@ PORT=3000
 DB_USER=tu_usuario
 DB_PASSWORD=tu_contraseña
 DB_NAME=teslo_shop_db
+DB_HOST=localhost
+DB_PORT=5432
 ```
 
 ### 4. Levantar la base de datos con Docker
