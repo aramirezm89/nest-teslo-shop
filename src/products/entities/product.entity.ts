@@ -6,20 +6,26 @@ export class Product {
   id: string;
 
   @Column('text', { unique: true })
-  name: string;
+  title: string;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   description: string;
 
-  @Column('text')
+  @Column('text', { unique: true })
   slug: string;
 
-  @Column('numeric')
+  @Column('numeric', { default: 0 })
   price: number;
 
-  @Column('numeric')
+  @Column('numeric', { default: 0 })
   stock: number;
 
   @Column('text')
   brand: string;
+
+  @Column('text', { array: true })
+  sizes: string[];
+
+  @Column('text')
+  gender: string;
 }
