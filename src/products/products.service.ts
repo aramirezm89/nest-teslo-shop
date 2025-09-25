@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
+  private readonly logger = new Logger(ProductsService.name);
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
@@ -16,15 +17,7 @@ export class ProductsService {
       const product = this.productRepository.create(createProductDto);
       return await this.productRepository.save(product);
     } catch (error) {
-      console.log(error);
-
-      // Manejo específico para errores de constraint de unicidad
-      if (error.code === '23505') {
-        throw new BadRequestException(`Producto con ${error.detail}`);
-      }
-
-      // Otros errores de base de datos
-      throw new BadRequestException('Error al crear el producto');
+      this.handleDbException(error);
     }
   }
 
@@ -42,5 +35,16 @@ export class ProductsService {
 
   remove(id: number) {
     return `This action removes a #${id} product`;
+  }
+
+  private handleDbException(error: any) {
+    this.logger.error(error);
+    // Manejo específico para errores de constraint de unicidad
+    if (error.code === '23505') {
+      throw new BadRequestException(`Producto con ${error.detail}`);
+    }
+
+    // Otros errores de base de datos
+    throw new BadRequestException('Error al crear el producto');
   }
 }
