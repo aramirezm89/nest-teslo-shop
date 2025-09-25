@@ -5,6 +5,7 @@ import { envSchema } from './configuration/env.validationSchema';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './products/products.module';
+import { CommonModule } from './common/common.module';
 @Module({
   imports: [
     // Configuración de variables de entorno
@@ -35,6 +36,7 @@ import { ProductsModule } from './products/products.module';
     }),
 
     ProductsModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],

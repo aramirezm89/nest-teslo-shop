@@ -1,0 +1,26 @@
+¿{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Debug Nest Framework",
+        "args": [
+          "-r",
+          "ts-node/register",
+          "--inspect-brk",
+          "${workspaceFolder}/src/main.ts" // Asegúrate que este sea tu punto de entrada
+        ],
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "start:debug" // O usa la ruta al archivo que compila (dist/main.js)
+        ],
+        "console": "integratedTerminal",
+        "sourceMaps": true,
+        "outFiles": [
+          "${workspaceFolder}/dist/**/*.js"
+        ]
+      }
+    ]
+  }
