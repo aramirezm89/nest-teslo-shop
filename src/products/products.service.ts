@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,8 +11,21 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
   ) {}
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  async create(createProductDto: CreateProductDto) {
+    try {
+      const product = this.productRepository.create(createProductDto);
+      return await this.productRepository.save(product);
+    } catch (error) {
+      console.log(error);
+
+      // Manejo específico para errores de constraint de unicidad
+      if (error.code === '23505') {
+        throw new BadRequestException(`Producto con ${error.detail}`);
+      }
+
+      // Otros errores de base de datos
+      throw new BadRequestException('Error al crear el producto');
+    }
   }
 
   findAll() {

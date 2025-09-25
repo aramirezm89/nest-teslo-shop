@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import type { Gender, ProductSize } from '../interfaces';
 
 @Entity()
 export class Product {
@@ -20,12 +21,9 @@ export class Product {
   @Column('numeric', { default: 0 })
   stock: number;
 
-  @Column('text')
-  brand: string;
-
   @Column('text', { array: true })
-  sizes: string[];
+  sizes: ProductSize[];
 
   @Column('text')
-  gender: string;
+  gender: Gender;
 }
