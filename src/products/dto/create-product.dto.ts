@@ -12,14 +12,17 @@ import { ProductSize } from '../interfaces';
 import { Transform } from 'class-transformer';
 
 export class CreateProductDto {
+  @Transform(({ value }) => value?.trim())
   @IsString()
   @MinLength(1)
   title: string;
 
+  @Transform(({ value }) => value?.trim())
   @IsString()
   @IsOptional()
   description?: string;
 
+  @Transform(({ value }) => value?.trim())
   @IsString()
   @MinLength(1)
   @IsOptional()
