@@ -46,4 +46,10 @@ export class CreateProductDto {
   @Transform(({ value }) => value.toLowerCase())
   @IsIn(['male', 'female', 'unisex', 'kid'])
   gender: Gender;
+
+  @IsArray()
+  @Transform(({ value }) => value?.map((tag: string) => tag.toLowerCase()))
+  @IsString({ each: true })
+  @IsOptional()
+  tags?: string[];
 }
