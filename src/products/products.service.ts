@@ -120,6 +120,15 @@ export class ProductsService {
     await this.productRepository.remove(product);
   }
 
+  async deleteAllProducts() {
+    try {
+      await this.productRepository.delete({});
+    } catch (error) {
+      this.logger.error(error);
+      throw new BadRequestException('Error al eliminar todos los productos');
+    }
+  }
+
   private handleDbException(error: any) {
     this.logger.error(error);
     // Manejo específico para errores de constraint de unicidad
