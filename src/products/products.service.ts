@@ -75,21 +75,39 @@ export class ProductsService {
 
   async update(id: string, updateProductDto: UpdateProductDto) {
     const { images, ...toUpdate } = updateProductDto;
-    try {
-      // Busca el producto por ID y actualiza los campos enviados en el updateProductDto
-      const product = await this.productRepository.preload({
-        id,
-        ...toUpdate,
-      });
 
-      if (!product) {
-        throw new BadRequestException(`Producto con ${id} no encontrado`);
+    // Busca el producto por ID y actualiza los campos enviados en el updateProductDto
+    const product = await this.productRepository.preload({
+      id,
+      ...toUpdate,
+    });
+
+    if (!product) {
+      throw new BadRequestException(`Producto con ${id} no encontrado`);
+    }
+
+    //create query runner
+    const queryRunner = this.DataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      if (images) {
+        // Elimina las imágenes antiguas
+        await queryRunner.manager.delete(ProductImage, { product: { id } });
+        // Crea las nuevas imágenes
+        const newImages = images.map((image) =>
+          this.prodcutImageRepository.create({ url: image }),
+        );
+        product.images = newImages;
       }
 
-      //create query runner
-      const queryRunner = this.DataSource.createQueryRunner();
-      return await this.productRepository.save(product);
+      await queryRunner.manager.save(product);
+      await queryRunner.commitTransaction();
+      return this.findOne(id);
     } catch (error) {
+      await queryRunner.rollbackTransaction();
+      await queryRunner.release();
       this.handleDbException(error);
     }
   }
