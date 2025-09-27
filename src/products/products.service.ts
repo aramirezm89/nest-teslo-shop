@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { validate as IsvalidUUID } from 'uuid';
 import { ProductImage } from './entities';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
@@ -16,6 +17,7 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(ProductImage)
     private readonly prodcutImageRepository: Repository<ProductImage>,
+    private readonly DataSource: DataSource,
   ) {}
   async create(createProductDto: CreateProductDto) {
     try {
@@ -38,12 +40,19 @@ export class ProductsService {
     }
   }
 
-  findAll(paginationDto: PaginationDto) {
+  async findAll(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;
-    return this.productRepository.find({
+    const products = await this.productRepository.find({
       take: limit,
       skip: offset,
+      relations: {
+        images: true,
+      },
     });
+    return products.map((product) => ({
+      ...product,
+      images: product.images?.map((image) => image.url),
+    }));
   }
 
   async findOne(term: string) {
@@ -56,21 +65,29 @@ export class ProductsService {
     if (!product) {
       throw new BadRequestException(`Producto con ${term} no encontrado`);
     }
-    return product;
+
+    const productWithImages = {
+      ...product,
+      images: product.images?.map((image) => image.url),
+    };
+    return productWithImages;
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
+    const { images, ...toUpdate } = updateProductDto;
     try {
       // Busca el producto por ID y actualiza los campos enviados en el updateProductDto
       const product = await this.productRepository.preload({
         id,
-        ...updateProductDto,
-        images: [],
+        ...toUpdate,
       });
 
       if (!product) {
         throw new BadRequestException(`Producto con ${id} no encontrado`);
       }
+
+      //create query runner
+      const queryRunner = this.DataSource.createQueryRunner();
       return await this.productRepository.save(product);
     } catch (error) {
       this.handleDbException(error);
@@ -78,8 +95,11 @@ export class ProductsService {
   }
 
   async remove(id: string) {
-    const product = await this.findOne(id);
-    return this.productRepository.remove(product);
+    const product = await this.productRepository.findOneBy({ id });
+    if (!product) {
+      throw new BadRequestException(`Producto con ${id} no encontrado`);
+    }
+    await this.productRepository.remove(product);
   }
 
   private handleDbException(error: any) {
