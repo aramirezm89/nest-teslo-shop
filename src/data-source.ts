@@ -2,7 +2,7 @@
 
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
-import { Product } from './products/entities/product.entity';
+import { Product, ProductImage } from './products/entities';
 
 dotenv.config(); // carga variables de .env
 
@@ -13,7 +13,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [Product],
+  entities: [Product, ProductImage],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
 });
