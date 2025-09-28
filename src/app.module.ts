@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './products/products.module';
 import { CommonModule } from './common/common.module';
 import { SeedModule } from './seed/seed.module';
+import { FilesModule } from './files/files.module';
 @Module({
   imports: [
     // Configuración de variables de entorno
@@ -39,6 +40,7 @@ import { SeedModule } from './seed/seed.module';
     ProductsModule,
     CommonModule,
     SeedModule,
+    FilesModule,
   ],
   controllers: [],
   providers: [],
