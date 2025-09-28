@@ -6,6 +6,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './products/products.module';
 import { CommonModule } from './common/common.module';
+import { SeedModule } from './seed/seed.module';
 @Module({
   imports: [
     // Configuración de variables de entorno
@@ -37,6 +38,7 @@ import { CommonModule } from './common/common.module';
 
     ProductsModule,
     CommonModule,
+    SeedModule,
   ],
   controllers: [],
   providers: [],

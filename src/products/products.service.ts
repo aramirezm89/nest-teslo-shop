@@ -3,11 +3,10 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { validate as IsvalidUUID } from 'uuid';
 import { ProductImage } from './entities';
-import { DataSource } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
@@ -122,7 +121,8 @@ export class ProductsService {
 
   async deleteAllProducts() {
     try {
-      await this.productRepository.delete({});
+      await this.productRepository.deleteAll();
+      this.logger.log('Todos los productos han sido eliminados');
     } catch (error) {
       this.logger.error(error);
       throw new BadRequestException('Error al eliminar todos los productos');

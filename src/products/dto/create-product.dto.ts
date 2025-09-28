@@ -40,11 +40,11 @@ export class CreateProductDto {
 
   @IsArray()
   @Transform(({ value }) => value?.map((size: string) => size.toUpperCase()))
-  @IsIn(['XS', 'S', 'M', 'L', 'XL', 'XXL'], { each: true })
+  @IsIn(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'], { each: true })
   sizes: ProductSize[];
 
   @Transform(({ value }) => value.toLowerCase())
-  @IsIn(['male', 'female', 'unisex', 'kid'])
+  @IsIn(['men', 'women', 'unisex', 'kid'])
   gender: Gender;
 
   @IsArray()

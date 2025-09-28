@@ -186,6 +186,34 @@ Esta funcionalidad es útil para:
 - Servir archivos estáticos como imágenes, CSS, JavaScript
 - Proporcionar una página de inicio o documentación básica
 
+## Poblar la base de datos (Seed)
+
+Para poblar la base de datos con datos iniciales de productos, utiliza el endpoint de seed:
+
+### Ejecutar el seed
+
+```bash
+# Método 1: Usando curl
+curl -X GET http://localhost:3000/api/seed
+
+# Método 2: Acceder directamente desde el navegador
+http://localhost:3000/api/seed
+```
+
+### ¿Qué hace el seed?
+
+- **Limpia la base de datos**: Elimina todos los productos e imágenes existentes
+- **Inserta productos de prueba**: Agrega una colección de productos predefinidos con sus respectivas imágenes
+- **Confirma la operación**: Retorna un mensaje indicando cuántos productos fueron insertados
+
+### Respuesta esperada
+
+```json
+"Seed ejecutado. Productos insertados: [número de productos]"
+```
+
+**Nota importante**: Este endpoint eliminará todos los productos existentes en la base de datos antes de insertar los nuevos datos. Úsalo solo en entornos de desarrollo o cuando necesites resetear completamente los datos de productos.
+
 ## Solución de problemas
 
 ### Error de conexión a la base de datos

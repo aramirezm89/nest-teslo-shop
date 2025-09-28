@@ -9,5 +9,6 @@ import { ProductImage, Product } from './entities';
   providers: [ProductsService],
   // Registra la entidad Product para que se pueda inyectar su repositorio en el módulo
   imports: [TypeOrmModule.forFeature([Product, ProductImage])],
+  exports: [ProductsService, TypeOrmModule],
 })
 export class ProductsModule {}

@@ -45,4 +45,9 @@ export class ProductsController {
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.remove(id);
   }
+
+  /*   @Delete()
+  deleteAllProducts() {
+    return this.productsService.deleteAllProducts();
+  } */
 }
