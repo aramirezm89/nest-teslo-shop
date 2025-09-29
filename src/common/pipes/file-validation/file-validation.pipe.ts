@@ -28,6 +28,7 @@ export class FileValidationPipe implements PipeTransform {
     }
 
     this.logger.log('Archivo valido');
+    this.logger.log(typeof value);
     return value;
   }
 }

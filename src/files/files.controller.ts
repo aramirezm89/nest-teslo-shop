@@ -1,13 +1,19 @@
 import {
-  Body,
   Controller,
+  Delete,
+  Param,
   Post,
+  Query,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import {
+  FileValidationPipe,
+  MultipleFileValidationPipe,
+} from '../common/pipes/file-validation';
 import { FilesService } from './files.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { FileValidationPipe } from '../common/pipes/file-validation/file-validation.pipe';
 
 @Controller('files')
 export class FilesController {
@@ -19,5 +25,19 @@ export class FilesController {
     @UploadedFile(new FileValidationPipe()) file: Express.Multer.File,
   ) {
     return this.filesService.uploadProductImage(file);
+  }
+
+  @Post('products')
+  @UseInterceptors(FilesInterceptor('images'))
+  uploadUserImage(
+    @UploadedFiles(new MultipleFileValidationPipe())
+    files: Array<Express.Multer.File>,
+  ) {
+    return this.filesService.uploadProductImages(files);
+  }
+
+  @Delete('product')
+  deleteProductImage(@Query('cloudinaryUrl') cloudinaryUrl: string) {
+    return this.filesService.deleteProductImageCloudinary(cloudinaryUrl);
   }
 }
