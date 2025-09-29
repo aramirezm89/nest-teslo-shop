@@ -22,8 +22,8 @@ export class FilesService {
   }
 
   uploadProductImage(file: Express.Multer.File) {
-    const { filename, originalname } = file;
-    this.logger.log(originalname);
+    const { filename } = file;
+    this.logger.log(file);
     return filename;
   }
 
@@ -52,9 +52,7 @@ export class FilesService {
     }
   }
 
-  async deleteProductImageCloudinary(
-    /*TODO: imageId: number, */ cloudinaryUrl: string,
-  ) {
+  async deleteProductImageCloudinary(cloudinaryUrl: string) {
     // "https://res.cloudinary.com/my-cloudinary-ar/image/upload/v1759107380/nest-products/eemtkh3pizxnsld5babn.png"
 
     // Dividir por "/" y quitar los segmentos de versión + extensión

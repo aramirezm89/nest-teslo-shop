@@ -14,13 +14,22 @@ import {
   MultipleFileValidationPipe,
 } from '../common/pipes/file-validation';
 import { FilesService } from './files.service';
+import multer from 'multer';
+import fileNamerHelper from './helpers/file-namer.helper';
 
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @Post('product')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: multer.diskStorage({
+        destination: './static/products',
+        filename: fileNamerHelper,
+      }),
+    }),
+  )
   uploadProductImage(
     @UploadedFile(new FileValidationPipe()) file: Express.Multer.File,
   ) {
