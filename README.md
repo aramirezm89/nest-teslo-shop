@@ -75,6 +75,8 @@ DB_PASSWORD=tu_contraseña
 DB_NAME=teslo_shop_db
 DB_HOST=localhost
 DB_PORT=5432
+CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name
+HOST_API=http://localhost:3000/api
 ```
 
 ### 4. Levantar la base de datos con Docker
@@ -163,11 +165,27 @@ El proyecto incluye un archivo `docker-compose.yaml` que configura:
 Asegúrate de configurar estas variables en tu archivo `.env`:
 
 ```env
-PORT=3000                    # Puerto de la aplicación
-DB_USER=your_user           # Usuario de la base de datos
-DB_PASSWORD=your_password   # Contraseña de la base de datos
-DB_NAME=your_database_name  # Nombre de la base de datos
+PORT=3000                                      # Puerto de la aplicación
+DB_HOST=localhost                              # Host de la base de datos
+DB_PORT=5432                                   # Puerto de la base de datos
+DB_USER=your_user                              # Usuario de la base de datos
+DB_PASSWORD=your_password                      # Contraseña de la base de datos
+DB_NAME=your_database_name                     # Nombre de la base de datos
+CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name  # URL de conexión a Cloudinary
+HOST_API=http://localhost:3000/api             # URL base de la API para servir archivos
 ```
+
+#### Configuración de Cloudinary
+
+Para el manejo de imágenes de productos, necesitas configurar una cuenta en [Cloudinary](https://cloudinary.com/):
+
+1. Crea una cuenta gratuita en Cloudinary
+2. Ve a tu dashboard y copia la "Cloudinary URL"
+3. Pégala en la variable `CLOUDINARY_URL` de tu archivo `.env`
+
+#### HOST_API
+
+La variable `HOST_API` se utiliza para generar URLs completas para servir imágenes de productos almacenadas localmente. Debe apuntar a la URL base de tu API seguida de `/api`.
 
 ## Acceso a la aplicación
 
