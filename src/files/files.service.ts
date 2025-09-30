@@ -1,14 +1,18 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary } from 'cloudinary';
+import { existsSync } from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class FilesService {
   private readonly logger = new Logger(FilesService.name);
+  private readonly hostApi: string;
 
   constructor(private readonly configService: ConfigService) {
     // Configure Cloudinary with URL from environment
     const cloudinaryUrl = this.configService.get<string>('CLOUDINARY_URL');
+    this.hostApi = this.configService.get<string>('HOST_API')!;
     if (cloudinaryUrl) {
       // Parse the Cloudinary URL format: cloudinary://api_key:api_secret@cloud_name
       const url = new URL(cloudinaryUrl);
@@ -24,7 +28,7 @@ export class FilesService {
   uploadProductImage(file: Express.Multer.File) {
     const { filename } = file;
     this.logger.log(file);
-    return filename;
+    return `${this.hostApi}/files/product/${filename}`;
   }
 
   async uploadProductImages(images: Array<Express.Multer.File>) {
@@ -50,6 +54,18 @@ export class FilesService {
       console.log(error);
       return null;
     }
+  }
+
+  getProductImageFileSystem(imageName: string) {
+    //ruta del archivo
+    const path = join(__dirname, `../../static/products/${imageName}`);
+
+    //validar si existe
+    if (!existsSync(path)) {
+      throw new BadRequestException('No se encontro la imagen');
+    }
+
+    return path;
   }
 
   async deleteProductImageCloudinary(cloudinaryUrl: string) {
