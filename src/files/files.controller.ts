@@ -28,7 +28,9 @@ export class FilesController {
   @Get('product/:imageName')
   @Header('Content-Type', 'image/jpeg')
   @Header('Content-Disposition', 'inline')
-  getProductImage(@Param('imageName') imageName: string): StreamableFile {
+  getProductImageFileSysten(
+    @Param('imageName') imageName: string,
+  ): StreamableFile {
     const path = this.filesService.getProductImageFileSystem(imageName);
     const file = createReadStream(path);
     return new StreamableFile(file);
