@@ -3,13 +3,14 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { LoginUserDto, CreateUserDto, UpdateUserDto } from './dto';
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -32,6 +33,23 @@ export class AuthService {
     } catch (error) {
       this.handleDbException(error);
     }
+  }
+
+  async login(loginUserDto: LoginUserDto) {
+    const { password, ...rest } = loginUserDto;
+    const userBd = await this.userRepository.findOne({
+      where: { email: rest.email },
+      select: ['email', 'password', 'fullname', 'isActive', 'roles', 'id'],
+    });
+    if (!userBd) {
+      throw new UnauthorizedException('User not found');
+    }
+    if (!bcrypt.compareSync(password, userBd.password)) {
+      throw new UnauthorizedException('Password not found');
+    }
+    const { password: _, ...user } = userBd;
+    return user;
+    //Todo: Generar JWT
   }
 
   findAll() {
