@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto, CreateUserDto, UpdateUserDto } from './dto';
 import { JwtPayload } from './interfaces';
+// JwtService: Servicio de NestJS para firmar y verificar tokens JWT
 import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    // JwtService: Inyectado automáticamente gracias a la configuración en AuthModule
     private readonly jwtService: JwtService,
   ) {}
 
@@ -32,6 +34,7 @@ export class AuthService {
       const { password: _, ...userBd } = await this.userRepository.save(user);
       return {
         ...userBd,
+        // Genera un token JWT con el payload del usuario
         token: this.getJwtToken({ email: user.email, fullname: user.fullname }),
       };
     } catch (error) {
@@ -54,6 +57,7 @@ export class AuthService {
     const { password: _, ...user } = userBd;
     return {
       ...user,
+      // Genera un token JWT con el payload del usuario autenticado
       token: this.getJwtToken({ email: user.email, fullname: user.fullname }),
     };
   }
@@ -74,6 +78,15 @@ export class AuthService {
     return `This action removes a #${id} auth`;
   }
 
+  /**
+   * Genera un token JWT firmado con el payload proporcionado
+   *
+   * @param payload - Datos que se incluirán en el token (email, fullname)
+   * @returns string - Token JWT firmado que el cliente usará para autenticarse
+   *
+   * El token se firma con el secreto configurado en JWT_SECRET y expira según
+   * la configuración en AuthModule (2h por defecto)
+   */
   private getJwtToken(payload: JwtPayload): string {
     return this.jwtService.sign(payload);
   }
