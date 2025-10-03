@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import * as Joi from 'joi';
 
 export const envSchema = Joi.object({
@@ -10,4 +9,5 @@ export const envSchema = Joi.object({
   DB_NAME: Joi.string().required(),
   CLOUDINARY_URL: Joi.string().required(),
   HOST_API: Joi.string().required(),
+  JWT_SECRET: Joi.string().required(),
 });

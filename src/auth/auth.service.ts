@@ -11,12 +11,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto, CreateUserDto, UpdateUserDto } from './dto';
+import { JwtPayload } from './interfaces';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -27,9 +30,10 @@ export class AuthService {
         password: bcrypt.hashSync(password, 10),
       });
       const { password: _, ...userBd } = await this.userRepository.save(user);
-      return userBd;
-
-      //Todo: Generar JWT
+      return {
+        ...userBd,
+        token: this.getJwtToken({ email: user.email, fullname: user.fullname }),
+      };
     } catch (error) {
       this.handleDbException(error);
     }
@@ -48,8 +52,10 @@ export class AuthService {
       throw new UnauthorizedException('Password not found');
     }
     const { password: _, ...user } = userBd;
-    return user;
-    //Todo: Generar JWT
+    return {
+      ...user,
+      token: this.getJwtToken({ email: user.email, fullname: user.fullname }),
+    };
   }
 
   findAll() {
@@ -68,7 +74,10 @@ export class AuthService {
     return `This action removes a #${id} auth`;
   }
 
-  handleDbException(error: any): never {
+  private getJwtToken(payload: JwtPayload): string {
+    return this.jwtService.sign(payload);
+  }
+  private handleDbException(error: any): never {
     this.logger.error(error);
     if (error.code === '23505') {
       throw new BadRequestException(error.detail);
