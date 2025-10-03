@@ -35,7 +35,11 @@ export class AuthService {
       return {
         ...userBd,
         // Genera un token JWT con el payload del usuario
-        token: this.getJwtToken({ email: user.email, fullname: user.fullname }),
+        token: this.getJwtToken({
+          email: user.email,
+          fullname: user.fullname,
+          id: user.id,
+        }),
       };
     } catch (error) {
       this.handleDbException(error);
@@ -58,7 +62,11 @@ export class AuthService {
     return {
       ...user,
       // Genera un token JWT con el payload del usuario autenticado
-      token: this.getJwtToken({ email: user.email, fullname: user.fullname }),
+      token: this.getJwtToken({
+        email: user.email,
+        fullname: user.fullname,
+        id: user.id,
+      }),
     };
   }
 

@@ -6,9 +6,11 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto, CreateUserDto, UpdateUserDto } from './dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -28,7 +30,11 @@ export class AuthController {
   findAll() {
     return this.authService.findAll();
   }
-
+  @Get('private')
+  @UseGuards(AuthGuard('jwt'))
+  testingPrivateRoute() {
+    return 'This is a private route';
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.authService.findOne(+id);

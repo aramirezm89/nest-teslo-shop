@@ -8,6 +8,8 @@ import { User } from '../entities/user.entity';
 import { JwtPayload } from '../interfaces';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Logger } from '@nestjs/common';
+import { ValidateUserPayload } from '../interfaces';
 
 /**
  * JwtStrategy: Estrategia personalizada de JWT para Passport
@@ -17,6 +19,7 @@ import { InjectRepository } from '@nestjs/typeorm';
  */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  private readonly logger = new Logger(JwtStrategy.name);
   constructor(
     private readonly configService: ConfigService,
     @InjectRepository(User)
@@ -44,11 +47,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * 4. Si todo es correcto, retorna el usuario completo
    * 5. El usuario se inyecta automáticamente en req.user
    */
-  async validate(payload: JwtPayload): Promise<User> {
-    const { email } = payload;
+  async validate(payload: JwtPayload): Promise<ValidateUserPayload> {
+    const { id } = payload;
 
     // Busca el usuario en la base de datos usando el email del token
-    const user = await this.userRepository.findOneBy({ email });
+    const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
       throw new UnauthorizedException('Token no válido');
@@ -58,7 +61,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Usuario no activo');
     }
 
+    const { password, ...rest } = user;
+    this.logger.log('Usuario validado: ', {
+      ...rest,
+    });
     // El usuario retornado se inyectará automáticamente en req.user
-    return user;
+    return rest;
   }
 }

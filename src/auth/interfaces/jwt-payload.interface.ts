@@ -1,3 +1,5 @@
+import { UserRole } from './user-roles.interface';
+
 /**
  * JwtPayload: Interface que define la estructura del payload del token JWT
  *
@@ -12,6 +14,12 @@
  * ya que el JWT es decodificable por el cliente.
  */
 export interface JwtPayload {
+  id: string;
   email: string;
   fullname: string;
+}
+
+export interface ValidateUserPayload extends JwtPayload {
+  isActive: boolean;
+  roles: UserRole[];
 }
