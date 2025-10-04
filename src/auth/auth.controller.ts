@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
+  Headers,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -16,6 +18,9 @@ import {
   GoogleTokenDto,
 } from './dto';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from './decorators';
+import { User } from './entities/user.entity';
+import { getRawHeaders } from 'src/common/decorators/get-rawheaders.decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -42,8 +47,19 @@ export class AuthController {
   }
   @Get('private')
   @UseGuards(AuthGuard('jwt'))
-  testingPrivateRoute() {
-    return 'This is a private route';
+  testingPrivateRoute(
+    @GetUser() user: User,
+    @GetUser('email') userEmail: string,
+    @getRawHeaders() rawHeaders: string[],
+    @Headers() headers: string[],
+  ) {
+    return {
+      user,
+      message: 'Esta es una routa privada',
+      userEmail,
+      rawHeaders,
+      headers,
+    };
   }
   @Get(':id')
   findOne(@Param('id') id: string) {
