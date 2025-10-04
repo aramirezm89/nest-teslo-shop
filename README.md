@@ -77,6 +77,8 @@ DB_HOST=localhost
 DB_PORT=5432
 CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name
 HOST_API=http://localhost:3000/api
+JWT_SECRET=tu_jwt_secret
+GOOGLE_CLIENT_ID=tu_google_client_id
 ```
 
 ### 4. Levantar la base de datos con Docker
@@ -173,6 +175,8 @@ DB_PASSWORD=your_password                      # Contraseña de la base de datos
 DB_NAME=your_database_name                     # Nombre de la base de datos
 CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name  # URL de conexión a Cloudinary
 HOST_API=http://localhost:3000/api             # URL base de la API para servir archivos
+JWT_SECRET=tu_jwt_secret                       # Secreto para firmar tokens JWT
+GOOGLE_CLIENT_ID=tu_google_client_id           # ID de cliente de Google OAuth
 ```
 
 #### Configuración de Cloudinary
@@ -186,6 +190,20 @@ Para el manejo de imágenes de productos, necesitas configurar una cuenta en [Cl
 #### HOST_API
 
 La variable `HOST_API` se utiliza para generar URLs completas para servir imágenes de productos almacenadas localmente. Debe apuntar a la URL base de tu API seguida de `/api`.
+
+#### Configuración de Google OAuth
+
+Para la autenticación con Google, necesitas configurar un proyecto en Google Cloud Console:
+
+1. Ve a [Google Cloud Console](https://console.cloud.google.com/)
+2. Crea un nuevo proyecto o selecciona uno existente
+3. Habilita la API de Google+ o Google Identity
+4. Ve a "Credenciales" y crea un "ID de cliente OAuth 2.0"
+5. Copia el "Client ID" y pégalo en la variable `GOOGLE_CLIENT_ID` de tu archivo `.env`
+
+#### JWT_SECRET
+
+La variable `JWT_SECRET` es utilizada para firmar y verificar los tokens JWT. Debe ser una cadena secreta y segura que solo tu aplicación conozca.
 
 ## Acceso a la aplicación
 

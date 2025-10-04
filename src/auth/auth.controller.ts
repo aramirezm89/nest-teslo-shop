@@ -9,7 +9,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginUserDto, CreateUserDto, UpdateUserDto } from './dto';
+import {
+  LoginUserDto,
+  CreateUserDto,
+  UpdateUserDto,
+  GoogleTokenDto,
+} from './dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
@@ -24,6 +29,11 @@ export class AuthController {
   @Post('login')
   login(@Body() loginUserDto: LoginUserDto) {
     return this.authService.login(loginUserDto);
+  }
+
+  @Post('google')
+  verifyGoogleToken(@Body() googleTokenDto: GoogleTokenDto) {
+    return this.authService.verifyGoogleToken(googleTokenDto);
   }
 
   @Get()

@@ -10,19 +10,33 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { LoginUserDto, CreateUserDto, UpdateUserDto } from './dto';
+import {
+  LoginUserDto,
+  CreateUserDto,
+  UpdateUserDto,
+  GoogleTokenDto,
+} from './dto';
 import { JwtPayload } from './interfaces';
 // JwtService: Servicio de NestJS para firmar y verificar tokens JWT
 import { JwtService } from '@nestjs/jwt';
+import { OAuth2Client } from 'google-auth-library';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
+  private readonly googleOAuthClient: OAuth2Client;
   private readonly logger = new Logger(AuthService.name);
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     // JwtService: Inyectado automáticamente gracias a la configuración en AuthModule
     private readonly jwtService: JwtService,
-  ) {}
+
+    private readonly configService: ConfigService,
+  ) {
+    this.googleOAuthClient = new OAuth2Client(
+      this.configService.get<string>('GOOGLE_CLIENT_ID'),
+    );
+  }
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -70,6 +84,53 @@ export class AuthService {
     };
   }
 
+  async verifyGoogleToken(token: GoogleTokenDto) {
+    console.log(token);
+    const ticket = await this.googleOAuthClient.verifyIdToken({
+      idToken: token.token,
+    });
+    const payload = ticket.getPayload();
+    this.logger.log(payload);
+    if (!payload) {
+      throw new UnauthorizedException('Google token not found');
+    }
+    const { email, name, picture } = payload;
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['email', 'password', 'fullname', 'isActive', 'roles', 'id'],
+    });
+    if (!user) {
+      this.logger.log('Usuario no encontrado');
+      this.logger.log('Creando usuario');
+      const user = this.userRepository.create({
+        email,
+        fullname: name,
+        password: bcrypt.hashSync('123456', 10),
+      });
+      await this.userRepository.save(user);
+      this.logger.log('Usuario creado y logeado');
+      return {
+        ...user,
+        // Genera un token JWT con el payload del usuario autenticado
+        token: this.getJwtToken({
+          email: user.email,
+          fullname: user.fullname,
+          id: user.id,
+        }),
+      };
+    }
+    const { password: _, ...userBd } = user;
+    this.logger.log('Usuario encontrado y logeado');
+    return {
+      ...userBd,
+      // Genera un token JWT con el payload del usuario autenticado
+      token: this.getJwtToken({
+        email: user.email,
+        fullname: user.fullname,
+        id: user.id,
+      }),
+    };
+  }
   findAll() {
     return `This action returns all auth`;
   }

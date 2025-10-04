@@ -10,4 +10,5 @@ export const envSchema = Joi.object({
   CLOUDINARY_URL: Joi.string().required(),
   HOST_API: Joi.string().required(),
   JWT_SECRET: Joi.string().required(),
+  GOOGLE_CLIENT_ID: Joi.string().required(),
 });
