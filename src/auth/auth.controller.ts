@@ -7,8 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
-  Req,
   Headers,
+  SetMetadata,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -21,6 +21,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from './decorators';
 import { User } from './entities/user.entity';
 import { getRawHeaders } from 'src/common/decorators/get-rawheaders.decorators';
+import { UserRoleGuard } from './guards/user-role/user-role.guard';
+import { RoleProtected } from './decorators/role-protected/role-protected.decorator';
+import { UserRole } from './interfaces';
+import { Auth } from './decorators/auth.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -61,6 +65,28 @@ export class AuthController {
       headers,
     };
   }
+
+  //  @SetMetadata('roles', ['admin'])
+
+  @Get('private2')
+  @RoleProtected(UserRole.ADMIN)
+  @UseGuards(AuthGuard('jwt'), UserRoleGuard)
+  testingPrivateRoute2(@GetUser() user: User) {
+    return {
+      user,
+      message: 'Esta es una routa privada',
+    };
+  }
+
+  @Get('private3')
+  @Auth(UserRole.ADMIN)
+  testingPrivateRoute3(@GetUser() user: User) {
+    return {
+      user,
+      message: 'Esta es una routa privada',
+    };
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.authService.findOne(+id);
