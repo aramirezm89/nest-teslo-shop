@@ -66,6 +66,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ...rest,
     });
     // El usuario retornado se inyectará automáticamente en req.user
+    this.logger.log('Usuario validado e inyectado en req.user: ', {
+      ...rest,
+    });
     return rest;
   }
 }
