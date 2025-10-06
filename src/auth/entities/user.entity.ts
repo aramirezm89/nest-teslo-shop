@@ -3,9 +3,11 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserRole } from '../interfaces';
+import { Product } from 'src/products/entities';
 
 @Entity('users')
 export class User {
@@ -31,6 +33,9 @@ export class User {
     array: true,
   })
   roles: UserRole[];
+
+  @OneToMany(() => Product, (product) => product.user)
+  products: Product[];
 
   @BeforeInsert()
   checkFields() {
