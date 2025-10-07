@@ -33,7 +33,6 @@ export class SeedService {
       return this.userRepository.save(user);
     });
     const [userInserted] = await Promise.all(insertPromisesUsers);
-    console.log(userInserted);
     this.logger.log(`Se insertaron ${insertPromisesUsers.length} usuarios`);
 
     const products = initialData.products;
