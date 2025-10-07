@@ -37,6 +37,6 @@ import { JwtStrategy } from './strategy/jwt-strategy';
   ],
   // Exporta servicios para que otros módulos puedan usarlos
   // JwtStrategy y PassportModule son necesarios para guards en otros módulos
-  exports: [JwtStrategy, JwtModule, PassportModule, TypeOrmModule],
+  exports: [JwtStrategy, JwtModule, PassportModule, TypeOrmModule, AuthService],
 })
 export class AuthModule {}

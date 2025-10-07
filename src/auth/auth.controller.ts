@@ -40,6 +40,12 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
+  @Get('check-status')
+  @Auth()
+  checkAuthStatus(@GetUser() user: User) {
+    return this.authService.checkAuthStatus(user);
+  }
+
   @Post('google')
   verifyGoogleToken(@Body() googleTokenDto: GoogleTokenDto) {
     return this.authService.verifyGoogleToken(googleTokenDto);

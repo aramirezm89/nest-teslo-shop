@@ -84,6 +84,19 @@ export class AuthService {
     };
   }
 
+  checkAuthStatus(user: User) {
+    const { password: _, ...userBd } = user;
+    return {
+      ...userBd,
+      // Genera un token JWT con el payload del usuario autenticado
+      token: this.getJwtToken({
+        email: user.email,
+        fullname: user.fullname,
+        id: user.id,
+      }),
+    };
+  }
+
   async verifyGoogleToken(token: GoogleTokenDto) {
     console.log(token);
     const ticket = await this.googleOAuthClient.verifyIdToken({
@@ -145,6 +158,16 @@ export class AuthService {
 
   remove(id: number) {
     return `This action removes a #${id} auth`;
+  }
+
+  async deleteAllUsers() {
+    try {
+      await this.userRepository.deleteAll();
+      this.logger.log('Todos los usuarios han sido eliminados');
+    } catch (error) {
+      this.logger.error(error);
+      throw new BadRequestException('Error al eliminar todos los usuarios');
+    }
   }
 
   /**

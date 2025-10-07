@@ -7,6 +7,7 @@ import { Repository, DataSource } from 'typeorm';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { validate as IsvalidUUID } from 'uuid';
 import { ProductImage } from './entities';
+import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class ProductsService {
@@ -18,12 +19,13 @@ export class ProductsService {
     private readonly prodcutImageRepository: Repository<ProductImage>,
     private readonly DataSource: DataSource,
   ) {}
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, user: User) {
     try {
       const { images = [], ...productData } = createProductDto;
 
       const product = this.productRepository.create({
         ...productData,
+        user,
         images: images.map((image) =>
           this.prodcutImageRepository.create({ url: image }),
         ),
@@ -32,6 +34,7 @@ export class ProductsService {
 
       return {
         ...productSaved,
+        user: productSaved.user.id,
         images: productSaved.images?.map((image) => image.url),
       };
     } catch (error) {
@@ -67,18 +70,20 @@ export class ProductsService {
 
     const productWithImages = {
       ...product,
+      user: product.user.id,
       images: product.images?.map((image) => image.url),
     };
     return productWithImages;
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto, user: User) {
     const { images, ...toUpdate } = updateProductDto;
 
     // Busca el producto por ID y actualiza los campos enviados en el updateProductDto
     const product = await this.productRepository.preload({
       id,
       ...toUpdate,
+      user,
     });
 
     if (!product) {
