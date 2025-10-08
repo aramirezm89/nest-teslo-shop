@@ -18,6 +18,8 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { UserRole } from 'src/auth/interfaces';
 import { GetUser } from 'src/auth/decorators';
 import { User } from 'src/auth/entities/user.entity';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { Product } from './entities';
 
 @Controller('products')
 export class ProductsController {
@@ -25,6 +27,14 @@ export class ProductsController {
 
   @Post()
   @Auth(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 201, type: Product, description: 'Product created' })
+  @ApiResponse({ status: 400, type: Product, description: 'Bad request' })
+  @ApiResponse({
+    status: 403,
+    type: Product,
+    description: 'Forbidden. Admin role required',
+  })
   create(@Body() createProductDto: CreateProductDto, @GetUser() user: User) {
     return this.productsService.create(createProductDto, user);
   }
